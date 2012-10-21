@@ -5,16 +5,20 @@ import cPickle as p
 class Client(object):
    def __init__(self):
              self.userinfo = {}
-             if(os.path.isfile('infoforlogin.dat')):
-                f=file('infoforlogin.dat','rb')
-                self.userinfo=p.load(f)
+             home_dir = os.environ['HOME']
+             config_file = home_dir + '/.wlt_config'
+             if(os.path.isfile(config_file)):
+                f = file(config_file, 'r')
+                self.userinfo["username"] = f.readline().strip()
+                self.userinfo["password"] = f.readline().strip()
                 f.close()
              else:
                 print "首次登录，请按提示操作"
                 self.userinfo['username']=raw_input("请输入用户名:")
                 self.userinfo['password']=raw_input("请输入密码:")
-                f=file('infoforlogin.dat','wb')
-                p.dump(self.userinfo,f)
+                f=file(config_file, 'w')
+                f.writelines(self.userinfo['username'] + '\n')
+                f.writelines(self.userinfo['password'])
                 f.close()
 
 
@@ -32,7 +36,7 @@ class Client(object):
              r=self.opener.open(request).read()
              print r.decode('gb2312').encode(self.type)
    def selectNet(self):
-             params={'cmd':'set','type':'8','exp':'0'}
+             params={'cmd':'set','type':'7','exp':'0'}
              request=urllib2.Request(
                  "http://wlt.ustc.edu.cn/cgi-bin/ip",
                  urllib.urlencode(params)
