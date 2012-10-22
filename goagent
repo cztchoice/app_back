@@ -1,2 +1,11 @@
-#!/bin/bash
-python2 ~/app/goagent/local/proxy.py 1> /dev/null 2> /dev/null &
+#!/usr/bin/env bash
+#When the net is down, goagent will not work after net is up,
+#so we kill the previous goagent process, and start a new one
+#else we will just start the goagent
+procid=`ps -ef|grep proxy.py |grep -v grep|awk '{print $2}'`
+if [ $procid != '' ]
+then
+    #echo $procid
+    kill $procid
+fi
+python ~/app/local/proxy.py &> /dev/null &
